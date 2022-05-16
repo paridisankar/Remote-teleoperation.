@@ -34,44 +34,40 @@ git clone https://github.com/paridisankar/Remote-teleoperation..git
 
 Dependencies
 
-In order to succesfully run the code, you should have installed paho-mqtt and ROS.
-MQTT Broker
+# ROS cmd_vel MQTT bridge
 
-The suggested MQTT Broker is Mosquitto. In order to install Mosquitto on Ubuntu follow this guide.
-Test
+## Introduction
 
-In order to test the code:
+A ROS package to use any mqtt broker for storing the /cmd_vel topic. Uses the paho_mqtt client package.
 
-    Check the Mosquitto broker status, if the broker is already active skip step 2.
+This topic can then be used subscribed by any MQTT client.
+Useful for resource constrained IoT Robots .
 
-    sudo service mosquitto status
 
-    Start the Mosquitto broker.
+## Setup
 
-    mosquitto
+**Requires ROS**
+(A guide for installation can be found [here](http://wiki.ros.org/ROS/Installation))
 
-    In a new terminal tab launch the imu_bridge.
 
-    roslaunch mqtt_ros_bridge imu_bridge.launch
+### How to build
+```
+$ cd /path/to/ws/src
+$ git clone <this repository>
+$ cd ..
+$ rosdep install --from-paths src --ignore-src -r -y --reinstall
+$ catkin_make
+$ source ./devel/setup.sh
 
-    In a new terminal tab check the ROS topip /inertial, nothing should appear.
+## Usage
 
-    rostopic echo /inertial
+` $ roslaunch cmd_vel_mqtt cmd_vel_pub.launch`
 
-    In a new terminal tab publish a sensors/imu message to the local Mosquitto broker.
+For example you can use this along with the teleop_twist_keyboard package for keyboard control.
 
-    mosquitto_pub -h localhost -t "sensors/imu" -m "acc;9.8;-0.3;0.5;vel;0.1;0.12;-0.4"
+` $ rosrun teleop_twist_keyboard teleop_twist_keyboard.py
 
-    In the terminal open at step 4 should appear the message received by the ROS master.
 
-How to use mqtt_ros_bridge
+Work in progress.
 
-The imu_brdige node is an example of how to use the bridge, summing up:
 
-    Import bridge.py
-    Create a class example_brigde that inherit from the bridge class.
-
-    class example_bridge(bridge.bridge):
-
-    Implement the msg_process function to map MQTT message to ROS message.
-    Initialize the bridge and call the loop function in a ROS while loop.
